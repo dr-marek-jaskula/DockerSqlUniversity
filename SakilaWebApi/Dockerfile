@@ -38,8 +38,10 @@ LABEL Name="Eltin"
 WORKDIR /app
 
 #4. Expose the docker container to ports: 80, 443. Ports are exposed in docker-compose
-EXPOSE 80 #Http internal port
-#EXPOSE 443 #Https internal port
+#Https internal port
+EXPOSE 80 
+#Https internal port
+#EXPOSE 443 
 
 #5. Copy from ""publish" image the whole directory "/app/publish" to the current directory (which is "/app")
 COPY --from=publish /app/publish .

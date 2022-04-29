@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SakilaWebApi", "SakilaWebApi\SakilaWebApi.csproj", "{57FBCB1B-67E8-4639-826B-B00EA34CA52B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{57FBCB1B-67E8-4639-826B-B00EA34CA52B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57FBCB1B-67E8-4639-826B-B00EA34CA52B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57FBCB1B-67E8-4639-826B-B00EA34CA52B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57FBCB1B-67E8-4639-826B-B00EA34CA52B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {195E4FBF-72B8-455E-B9FA-2207F530ECD3}
+	EndGlobalSection
+EndGlobal

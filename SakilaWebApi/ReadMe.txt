@@ -132,6 +132,7 @@ SELECT * FROM actor;
 
 		b) Connect by web api from system
 			1. Add new connection string: "FromContainerToContainer": "Server=db,1433;Database=sakila;User ID=SA;Password=Pas123Word2022"
+				This "db" in the above connection string is the name of the service from the "docker-compose.yaml"
 			2. In Program.cs change the connection string of the database context
 
 	5. Examine the running container:

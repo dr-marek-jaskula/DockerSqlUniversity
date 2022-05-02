@@ -1,6 +1,12 @@
 ﻿	USE VISUAL STUDIO CODE with Docker extension (simply the best)
 
+INFORMATION:
+    docker-compose up       -> uses Compose V1 if the flag "Use Docker Compose V2" is unchecked (to examine it -> Docker Desktop -> Setting -> General)
+    docker compose up       -> uses Compose V2 (sometime its not good -> for example reading the .env file can be problematic)
+
+================================================
 I. Containerize the WebApi using manual commands
+================================================
 	0. Open Visual Studio Code, navigate to the folder and open Docker extension
 	1. Write Dockerfile (its only for building image)
 
@@ -31,12 +37,14 @@ ENTRYPOINT ["dotnet", "SakilaWebApi.dll"]
 		http://localhost:8080/actor/example
 	5. Examine in Visual Studio Code Docker extension images and containers
 
+================================================
 II. Containerize the WebApi using docker-compose.yaml file
+================================================
 	0. Open Visual Studio Code, navigate to the folder and open Docker extension
 	1. Write Dockerfile (same as before)
-	2. Write docker-compose.yaml
+	2. Write docker-compose.yaml (version at: https://docs.docker.com/compose/compose-file/compose-versioning/)
 
-version: '3'
+version: '3.8'
 
 services:
   api:
@@ -54,7 +62,9 @@ services:
 		http://localhost:8080/actor/example
 	6. Examine in Visual Studio Code Docker extension images and containers
 
-II. Containerize Microsoft SQL Server using manual commands
+================================================
+III. Containerize Microsoft SQL Server using manual commands
+================================================
 	0. Open Visual Studio Code, navigate to the folder and open Docker extension
 	1. Write the container in the detach mode (-d): (port 1433 is the default port for the MS Sql Server)
 		docker run --name docker-mssql-container -e 'ACCEPT_EULA=Y' -e 'MSSQL_PID=Express' -e 'SA_PASSWORD=Pas123Word2022' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
@@ -77,12 +87,14 @@ SELECT * FROM actor;
 
 ! Containerize the WebApi and Microsoft SQL Server manually and connecting them is not possible without networks (docker networks). Networks are best to do with docker-compose.yaml
 
-III. Containerize the WebApi and Microsoft SQL Server using docker-compose.yaml
+================================================
+IV. Containerize the WebApi and Microsoft SQL Server using docker-compose.yaml
+================================================
 	0. Open Visual Studio Code, navigate to the folder and open Docker extension
 	1. Write Dockerfile (same as before)
 	2. Write docker-compose.yaml
 
-version: '3'
+version: '3.8'
 
 services:
   api:
@@ -113,9 +125,11 @@ services:
 
 networks:
   db-net:
+    name: docker-webapi-network
 
 volumes:
   dbdata:
+    name: docker-webapi-volume
 
 	3. Examine if the docker-compose.yaml is the valid yaml file on "https://codebeautify.org/yaml-validator"
 		a) Connect by Azure SQL Server
@@ -141,4 +155,62 @@ SELECT * FROM actor;
 		http://localhost:8080/actor
 	6. Examine in Visual Studio Code Docker extension images, containers and volumes
 
-	
+
+================================================
+IV+. Containerize the WebApi and Microsoft SQL Server using docker-compose.yaml and extract environmental variables to the external field
+================================================
+This approach provides the ENV defaults from the separate file ".env" or file with a custom name, for instance "docker-webapi.env". 
+Nevertheless, the sensitive data MUST NOT be stored in this file. 
+These values can be:
+a) Overwritten later (ENV approach) 
+b) Encrypted (Encryption approach) 
+c) Stored in Vault or other safe Secrets system like Docker Secrets, GitHub Secrets (usually not free)
+
+In addition to the previous approach (Containerize the WebApi and Microsoft SQL Server using docker-compose.yaml) we:
+	1. Add file "docker-webapi.env" in the same directory where the docker-compose.yaml file is:
+
+SA_PASSWORD=Pas123Word2022
+ACCEPT_EULA=Y
+MSSQL_PID=Express
+
+	2. Modify docker-compose.yaml file:
+
+version: '3.8'
+
+services:
+  api:
+    container_name: docker-webapi-by-compose-container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: docker-webapi-by-compose
+    networks:
+      - db-net
+    ports:
+      - 8080:80
+    depends_on:
+      - "db"
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sql-container
+    volumes:
+      - dbdata:/var/lib/sql 
+    env_file:
+      - docker-webapi.env
+    ports:
+      - 1433:1433
+    networks:
+      - db-net
+
+networks:
+  db-net:
+    name: docker-webapi-network
+
+volumes:
+  dbdata:
+    name: docker-webapi-volume
+
+!!! WARNING:
+	On my machine (and may be some others) the following Error occurs; "unexpected character "»" in variable name near "<docker-web.env body>"
+	Solution: Open up Docker Desktop, click gear icon at top to open the settings and uncheck the "Use Docker Compose V2" option. 
+

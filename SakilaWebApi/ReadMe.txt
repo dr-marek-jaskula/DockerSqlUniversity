@@ -214,3 +214,4 @@ volumes:
 	On my machine (and may be some others) the following Error occurs; "unexpected character "»" in variable name near "<docker-web.env body>"
 	Solution: Open up Docker Desktop, click gear icon at top to open the settings and uncheck the "Use Docker Compose V2" option. 
 
+

@@ -2,11 +2,11 @@ version: '3.8'
 
 services:
   api:
-    container_name: docker-webapi-by-compose-container
+    container_name: docker-webapi-container
     build:
       context: .
-      dockerfile: Dockerfile
-    image: docker-webapi-by-compose
+      dockerfile: Dockerfile-webapi
+    image: docker-webapi-image
     networks:
       - db-net
     ports:
@@ -14,12 +14,15 @@ services:
     depends_on:
       - "db"
   db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: sql-container
+    container_name: docker-mssql-container
+    build:
+      context: .
+      dockerfile: Dockerfile-mssql
+    image: docker-mssql-image
     volumes:
       - dbdata:/var/lib/sql 
     env_file:
-      - docker-webapi.env
+      - docker-mssql.env
     ports:
       - 1433:1433
     networks:
@@ -31,4 +34,4 @@ networks:
 
 volumes:
   dbdata:
-    name: docker-webapi-volume
+    name: docker-mssql-volume

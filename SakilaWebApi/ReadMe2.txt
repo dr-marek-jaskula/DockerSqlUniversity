@@ -78,4 +78,16 @@ volumes:
     name: docker-mssql-volume
     external: true
 
+================================================
+VI. Containerize the WebApi and Microsoft SQL Server using docker-compose.yaml:
+    a) Two Dockerfiles: Dockerfile-webapi, Dockerfile-mssql
+    b) External volume: docker-mssql-volume
+    c) Custom environmental variables file: docker-mssql.env
+    d) Not running mssql container as a Root
+    d) Custom configuration
+    e) Custom secrets
+================================================\
 
+
+
+At least 2GB of RAM (3.25 GB prior to 2017-CU2). Make sure to assign enough memory to the Docker VM if you're running on Docker for Mac or Windows.

@@ -222,8 +222,10 @@ volumes:
     external: true
 
 
-
-
+!!! To examine that the container is not running as "root" we need to:
+    1. docker exec -it docker-mssql-container bash
+    2. whoami
+-> The result should be "mssql" not a root
 
 
 CONFIG 
@@ -232,5 +234,3 @@ SECRETS
 https://docs.docker.com/compose/compose-file/compose-file-v3/#volume-configuration-reference
 
 4GB dla mssql server, w dockerze
-
-NOT ROOT

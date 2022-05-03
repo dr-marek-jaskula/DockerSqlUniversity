@@ -35,4 +35,3 @@ networks:
 volumes:
   dbdata:
     name: docker-mssql-volume
-    external: true

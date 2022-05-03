@@ -38,7 +38,7 @@ LABEL Name="Eltin"
 WORKDIR /app
 
 #4. Expose the docker container to ports: 80, 443. Ports are exposed in docker-compose
-#Https internal port
+#Http internal port
 EXPOSE 80 
 #Https internal port
 #EXPOSE 443 

@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile-mssql
     image: docker-mssql-image
     volumes:
-      - dbdata:/var/lib/sql 
+      - dbdata:/var/opt/mssql
     env_file:
       - docker-mssql.env
     ports:
@@ -35,3 +35,4 @@ networks:
 volumes:
   dbdata:
     name: docker-mssql-volume
+    external: true

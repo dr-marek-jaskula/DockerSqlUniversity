@@ -98,11 +98,11 @@ version: '3.8'
 
 services:
   api:
-    container_name: docker-webapi-by-compose-container
+    container_name: docker-webapi-container
     build:
       context: .
       dockerfile: Dockerfile
-    image: docker-webapi-by-compose
+    image: docker-webapi-image
     networks:
       - db-net
     ports:
@@ -111,9 +111,9 @@ services:
       - "db"
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: sql-container
+    container_name: docker-mssql-container
     volumes:
-      - dbdata:/var/lib/sql 
+      - dbdata:/var/opt/mssql
     environment:
       SA_PASSWORD: Pas123Word2022
       ACCEPT_EULA: Y
@@ -167,23 +167,23 @@ b) Encrypted (Encryption approach)
 c) Stored in Vault or other safe Secrets system like Docker Secrets, GitHub Secrets (usually not free)
 
 In addition to the previous approach (Containerize the WebApi and Microsoft SQL Server using docker-compose.yaml) we:
-	1. Add file "docker-webapi.env" in the same directory where the docker-compose.yaml file is:
+	1. Add file "docker-mssql.env" in the same directory where the docker-compose.yaml file is:
 
 SA_PASSWORD=Pas123Word2022
 ACCEPT_EULA=Y
 MSSQL_PID=Express
 
-	2. Modify docker-compose.yaml file:
+	2. Modify docker-compose.yaml file (with proper naming):
 
 version: '3.8'
 
 services:
   api:
-    container_name: docker-webapi-by-compose-container
+    container_name: docker-webapi-container
     build:
       context: .
       dockerfile: Dockerfile
-    image: docker-webapi-by-compose
+    image: docker-webapi-image
     networks:
       - db-net
     ports:
@@ -192,11 +192,11 @@ services:
       - "db"
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: sql-container
+    container_name: docker-mssql-container
     volumes:
-      - dbdata:/var/lib/sql 
+      - dbdata:/var/opt/mssql
     env_file:
-      - docker-webapi.env
+      - docker-mssql.env
     ports:
       - 1433:1433
     networks:
@@ -208,10 +208,29 @@ networks:
 
 volumes:
   dbdata:
-    name: docker-webapi-volume
+    name: docker-mssql-volume
 
 !!! WARNING:
 	On my machine (and may be some others) the following Error occurs; "unexpected character "»" in variable name near "<docker-web.env body>"
 	Solution: Open up Docker Desktop, click gear icon at top to open the settings and uncheck the "Use Docker Compose V2" option. 
 
+!!! In order to use the external volume (previously created) we need to:
 
+volumes:
+  dbdata:
+    name: docker-mssql-volume
+    external: true
+
+
+
+
+
+
+CONFIG 
+
+SECRETS
+https://docs.docker.com/compose/compose-file/compose-file-v3/#volume-configuration-reference
+
+4GB dla mssql server, w dockerze
+
+NOT ROOT

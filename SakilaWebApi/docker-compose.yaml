@@ -5,7 +5,7 @@ services:
     container_name: docker-webapi-container
     build:
       context: .
-      dockerfile: Dockerfile-webapi
+      dockerfile: Dockerfile.webapi
     image: docker-webapi-image
     networks:
       - db-net
@@ -17,7 +17,7 @@ services:
     container_name: docker-mssql-container
     build:
       context: .
-      dockerfile: Dockerfile-mssql
+      dockerfile: Dockerfile.mssql
     image: docker-mssql-image
     volumes:
       - dbdata:/var/opt/mssql

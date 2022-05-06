@@ -1,15 +1,13 @@
+using DatabaseModels;
 using Microsoft.EntityFrameworkCore;
-using SakilaWebApi;
 using SakilaWebApi.Services;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
+// [assembly: InternalsVisibleTo("SakilaWebApi.Tests")]
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
 builder.Services.AddDbContext<SakilaDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("FromContainerToContainer")));
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
@@ -21,7 +19,6 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

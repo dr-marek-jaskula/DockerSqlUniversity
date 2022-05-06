@@ -1,6 +1,7 @@
+using DatabaseModels.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace SakilaWebApi;
+namespace DatabaseModels;
 
 public class SakilaDbContext : DbContext
 {

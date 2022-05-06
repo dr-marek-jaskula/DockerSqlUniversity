@@ -4,6 +4,9 @@ INFORMATION:
     docker-compose up       -> uses Compose V1 if the flag "Use Docker Compose V2" is unchecked (to examine it -> Docker Desktop -> Setting -> General)
     docker compose up       -> uses Compose V2 (sometime its not good -> for example reading the .env file can be problematic)
 
+Solution structure:
+  One project called "SakilaWebApi" and file Dockerfile inside it
+
 ================================================
 I. Containerize the WebApi using manual commands
 ================================================
@@ -227,10 +230,5 @@ volumes:
     2. whoami
 -> The result should be "mssql" not a root
 
-
-CONFIG 
-
-SECRETS
-https://docs.docker.com/compose/compose-file/compose-file-v3/#volume-configuration-reference
-
-4GB dla mssql server, w dockerze
+Currect structure of the solution is: 
+  multiple projects, multiple dockerfiles and one docker-compose in the solution folder

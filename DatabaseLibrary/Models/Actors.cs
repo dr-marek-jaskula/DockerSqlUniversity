@@ -1,4 +1,4 @@
-﻿namespace SakilaWebApi;
+﻿namespace DatabaseModels.Models;
 
 public class Actor
 {

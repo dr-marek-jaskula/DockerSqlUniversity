@@ -1,4 +1,5 @@
 using AutoMapper;
+using DatabaseModels.Models;
 
 namespace SakilaWebApi;
 

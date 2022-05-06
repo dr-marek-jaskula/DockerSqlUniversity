@@ -1,4 +1,20 @@
-﻿Continuation of the ReadMe.txt
+﻿	USE VISUAL STUDIO CODE with Docker extension (simply the best)
+
+INFORMATION:
+    docker-compose up       -> uses Compose V1 if the flag "Use Docker Compose V2" is unchecked (to examine it -> Docker Desktop -> Setting -> General)
+    docker compose up       -> uses Compose V2 (sometime its not good -> for example reading the .env file can be problematic)
+
+Currect structure of the solution is: 
+  multiple projects, multiple dockerfiles and one docker-compose in the solution folder
+
+Additional informations:
+1. For mssql: At least 2GB of RAM (3.25 GB prior to 2017-CU2). Make sure to assign enough memory to the Docker VM if you're running on Docker for Mac or Windows.
+To examine the memory maximal capacity and current usage:
+    docker stats
+
+2. To examine that the container is not running as "root" we need to:
+    1. docker exec -it docker-mssql-container bash whoami
+-> The result should be "mssql" not a root
 
 ================================================
 V. Containerize the WebApi and Microsoft SQL Server using docker-compose.yaml:
@@ -78,16 +94,3 @@ volumes:
     name: docker-mssql-volume
     external: true
 
-================================================
-VI. Containerize the WebApi and Microsoft SQL Server using docker-compose.yaml:
-    a) Two Dockerfiles: Dockerfile-webapi, Dockerfile-mssql
-    b) External volume: docker-mssql-volume
-    c) Custom environmental variables file: docker-mssql.env
-    d) Not running mssql container as a Root
-    d) Custom configuration
-    e) Custom secrets
-================================================\
-
-
-
-At least 2GB of RAM (3.25 GB prior to 2017-CU2). Make sure to assign enough memory to the Docker VM if you're running on Docker for Mac or Windows.

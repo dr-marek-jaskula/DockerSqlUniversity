@@ -5,7 +5,7 @@ services:
     container_name: docker-webapi-container
     build:
       context: .
-      dockerfile: Dockerfile-webapi
+      dockerfile: SakilaWebApi/Dockerfile-webapi
     image: docker-webapi-image
     networks:
       - db-net
@@ -16,7 +16,7 @@ services:
   db:
     container_name: docker-mssql-container
     build:
-      context: .
+      context: ./DatabaseLibrary
       dockerfile: Dockerfile-mssql
     image: docker-mssql-image
     volumes:

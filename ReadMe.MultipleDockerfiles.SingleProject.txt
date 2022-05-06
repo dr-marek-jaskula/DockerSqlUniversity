@@ -4,8 +4,11 @@ INFORMATION:
     docker-compose up       -> uses Compose V1 if the flag "Use Docker Compose V2" is unchecked (to examine it -> Docker Desktop -> Setting -> General)
     docker compose up       -> uses Compose V2 (sometime its not good -> for example reading the .env file can be problematic)
 
-Currect structure of the solution is: 
-  multiple projects, multiple dockerfiles and one docker-compose in the solution folder
+Solution structure for this text file:
+    One project called "SakilaWebApi" and multiple dockerfiles inside: Dockerfile-mssql, Dockerfile-webapi
+
+Current structure of the solution is: 
+    Multiple projects, multiple dockerfiles and one docker-compose in the solution folder
 
 Additional informations:
 1. For mssql: At least 2GB of RAM (3.25 GB prior to 2017-CU2). Make sure to assign enough memory to the Docker VM if you're running on Docker for Mac or Windows.

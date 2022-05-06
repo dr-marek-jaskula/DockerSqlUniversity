@@ -4,8 +4,11 @@ INFORMATION:
     docker-compose up       -> uses Compose V1 if the flag "Use Docker Compose V2" is unchecked (to examine it -> Docker Desktop -> Setting -> General)
     docker compose up       -> uses Compose V2 (sometime its not good -> for example reading the .env file can be problematic)
 
-Solution structure:
-  One project called "SakilaWebApi" and file Dockerfile inside it
+Solution structure for this text file:
+    One project called "SakilaWebApi" and file Dockerfile inside it
+
+Current solution structure:
+    Many projects, many dockerfiles
 
 ================================================
 I. Containerize the WebApi using manual commands

@@ -22,7 +22,8 @@ VI. Containerize the WebApi and Microsoft SQL Server using docker-compose.yaml:
     b) One docker-compose.yaml in the solution folder
     c) One environmental file "docker-mssql.env" in the same folder as docker-compose.yaml
     d) External volume: docker-mssql-volume
-    e) compose.cmd file to run "docker-compose -p my-first-project up" by witting "compose" in batch (project_name specified in the docker-compose.yaml as comment)
+    e) compose.cmd && compose.ps1 files to compose the solution (up or down) - project_name is specified in the docker-compose.yaml as comment. 
+        Add to docker ignore: "**/compose*"
 ================================================
 
     Dockerfile-webapi:
@@ -120,11 +121,25 @@ for /f "tokens=*" %%i in ('findstr "project_name" docker-compose.yaml') do (
   set result=%%i
 )
 set str=%result:~15,30%
-docker-compose -p %str% up
+docker-compose -p %str% %1
+======================
+
+    compose.ps1:
+======================
+param
+(
+    [Parameter(Mandatory)]$Command
+)
+"compose " + $Command | cmd
 ======================
 
 To create a named project (a group of container) we navigate to the file where the "compose.cmd" file is (where solution is) and write:
-    compose <project_name>
+    Preferred way:
+a) In the cmd, Make/Launch, vs terminal or similar:
+    1) compose <up/down>             -> to invoke docker-compose <project_name> <up/down>   
+b) In PowerShell and similar
+    1) .\compose.ps1 <up/down>       -> to invoke docker-compose <project_name> <up/down> 
+    2) "compose <up/down>" | cmd     -> to invoke docker-compose <project_name> <up/down> 
 
-or write:
-    docker-compose -p <project_name> up
+    Other way:
+docker-compose -p <project_name> up

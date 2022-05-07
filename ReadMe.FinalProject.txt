@@ -4,10 +4,7 @@ INFORMATION:
     docker-compose up       -> uses Compose V1 if the flag "Use Docker Compose V2" is unchecked (to examine it -> Docker Desktop -> Setting -> General)
     docker compose up       -> uses Compose V2 (sometime its not good -> for example reading the .env file can be problematic)
 
-Solution structure for this file: 
-  Multiple projects, multiple dockerfiles, docker-compose in the solution folder, compose.cmd, compose.ps1 to run docker-compose up with named project
-
-Current structure of the solution: 
+Current structure of the solution is same as the solution structure for this file: 
   Multiple projects, multiple dockerfiles, docker-compose in the solution folder, compose.cmd, compose.ps1 to run docker-compose up with named project, seq logging implemented with a new container
 
 Additional informations:
@@ -19,17 +16,21 @@ To examine the memory maximal capacity and current usage:
     1. docker exec -it docker-mssql-container bash whoami
 -> The result should be "mssql" not a root
 
+3. In docker-compose "depend on":
+  You can control the order of service startup and shutdown with the depends_on option
+
 ================================================
 VI. Containerize the WebApi and Microsoft SQL Server using docker-compose.yaml:
-    a) Two Dockerfiles: Dockerfile-webapi (in SakilaWebApi), Dockerfile-mssql (in DatabaseLibrary)
+    a) Three Dockerfiles: Dockerfile.webapi (in SakilaWebApi), Dockerfile.mssql (in DatabaseLibrary), Dockerfile.seq (in solution folder) !! Naming convention changed in comparision to prvious ReadMe's
     b) One docker-compose.yaml in the solution folder
-    c) One environmental file "docker-mssql.env" in the same folder as docker-compose.yaml
-    d) External volume: docker-mssql-volume
+    c) Two environmental files "docker-mssql.env", "docker-seq.env" in the same folder as docker-compose.yaml
+    d) External volumes: docker-mssql-volume, docker-seq-volume
     e) compose.cmd && compose.ps1 files to compose the solution (up or down) - project_name is specified in the docker-compose.yaml as comment. 
         Add to docker ignore: "**/compose*"
+    f) seq is included in the separete container, connected with webapi by the new network
 ================================================
 
-    Dockerfile-webapi:
+    Dockerfile.webapi:
 ======================
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
@@ -62,9 +63,14 @@ COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SakilaWebApi.dll"]
 ======================
 
-    Dockerfile-mssql:
+    Dockerfile.mssql:
 ======================
 FROM mcr.microsoft.com/mssql/server:2019-latest
+======================
+
+    Dockerfile.seq:
+======================
+FROM FROM datalust/seq:latest
 ======================
 
     docker-mssql.env:
@@ -74,9 +80,14 @@ ACCEPT_EULA=Y
 MSSQL_PID=Express
 ======================
 
+    docker-seq.env:
+======================
+ACCEPT_EULA=Y
+======================
+
     docker-compose.yaml:
 ======================
-#project_name: my-first-project
+#project_name: final-project
 
 version: '3.8'
 
@@ -85,36 +96,59 @@ services:
     container_name: docker-webapi-container
     build:
       context: .
-      dockerfile: SakilaWebApi/Dockerfile-webapi
+      dockerfile: SakilaWebApi/Dockerfile.webapi
     image: docker-webapi-image
+    restart: unless-stopped
     networks:
       - db-net
+      - log-net
     ports:
       - 8080:80
     depends_on:
       - "db"
+      - "seq"
   db:
     container_name: docker-mssql-container
     build:
       context: ./DatabaseLibrary
-      dockerfile: Dockerfile-mssql
+      dockerfile: Dockerfile.mssql
     image: docker-mssql-image
     volumes:
       - dbdata:/var/opt/mssql
     env_file:
       - docker-mssql.env
+    restart: always
     ports:
       - 1433:1433
     networks:
       - db-net
+  seq:
+    container_name: docker-seq-container
+    build:
+      context: .
+      dockerfile: Dockerfile.seq
+    image: docker-seq-image
+    ports:
+      - 5341:80
+    env_file:
+      - docker-seq.env
+    restart: unless-stopped
+    volumes:
+      - ./seqdata:/data
+    networks:
+      - log-net
 
 networks:
   db-net:
-    name: docker-webapi-network
+    name: docker-db-network
+  log-net:
+    name: docker-log-network
 
 volumes:
   dbdata:
     name: docker-mssql-volume
+  seqdata:
+    name: docker-seq-volume
 ======================
 
     compose.cmd:

@@ -1,0 +1,1 @@
+FROM datalust/seq:latest

@@ -1,4 +1,4 @@
-#project_name: my-first-project
+#project_name: final-project
 
 version: '3.8'
 
@@ -7,33 +7,56 @@ services:
     container_name: docker-webapi-container
     build:
       context: .
-      dockerfile: SakilaWebApi/Dockerfile-webapi
+      dockerfile: SakilaWebApi/Dockerfile.webapi
     image: docker-webapi-image
+    restart: unless-stopped
     networks:
       - db-net
+      - log-net
     ports:
       - 8080:80
     depends_on:
       - "db"
+      - "seq"
   db:
     container_name: docker-mssql-container
     build:
       context: ./DatabaseLibrary
-      dockerfile: Dockerfile-mssql
+      dockerfile: Dockerfile.mssql
     image: docker-mssql-image
     volumes:
       - dbdata:/var/opt/mssql
     env_file:
       - docker-mssql.env
+    restart: always
     ports:
       - 1433:1433
     networks:
       - db-net
+  seq:
+    container_name: docker-seq-container
+    build:
+      context: .
+      dockerfile: Dockerfile.seq
+    image: docker-seq-image
+    ports:
+      - 5341:80
+    env_file:
+      - docker-seq.env
+    restart: unless-stopped
+    volumes:
+      - ./seqdata:/data
+    networks:
+      - log-net
 
 networks:
   db-net:
-    name: docker-webapi-network
+    name: docker-db-network
+  log-net:
+    name: docker-log-network
 
 volumes:
   dbdata:
     name: docker-mssql-volume
+  seqdata:
+    name: docker-seq-volume

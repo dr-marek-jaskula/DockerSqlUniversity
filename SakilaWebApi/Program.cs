@@ -4,7 +4,7 @@ using SakilaWebApi.Services;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-// [assembly: InternalsVisibleTo("SakilaWebApi.Tests")]
+[assembly: InternalsVisibleTo("SakilaWebApi.Tests")]
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();

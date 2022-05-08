@@ -1,4 +1,11 @@
-﻿	USE VISUAL STUDIO CODE with Docker extension (simply the best)
+﻿	  USE VISUAL STUDIO CODE with Docker extension
+
+  The Stand Alone Docker mode with Docker Compose is demonstrated for the learning purpose. 
+  Nevertheless, in production always use the Docker Swarm, which was designed for production: 
+    1) Docker Swarm includes config
+    2) Docker Swarm includes secrets
+    3) Docker Swarm includes rollback, always uptime and other features (also multiple replicas)
+  Use Docker Swarm even with a single node if necessary
 
 INFORMATION:
     docker-compose up       -> uses Compose V1 if the flag "Use Docker Compose V2" is unchecked (to examine it -> Docker Desktop -> Setting -> General)

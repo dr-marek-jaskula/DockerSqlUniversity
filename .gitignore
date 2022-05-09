@@ -364,3 +364,6 @@ FodyWeavers.xsd
 
 # Seq files folder
 seqdata/
+
+# Portainer files folder
+portainerdata/

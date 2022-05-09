@@ -14,7 +14,6 @@
   
   Use Docker Swarm even with a single node if necessary
 ===========================
-
   To create a single node swarm:
 1) Create a docker swarm: 
   docker swarm init

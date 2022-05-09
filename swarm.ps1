@@ -2,4 +2,4 @@ param
 (
     [Parameter(Mandatory)]$Command
 )
-"compose " + $Command | cmd
+"swarm " + $Command | cmd

@@ -1,14 +1,13 @@
-#project_name: docker-swarm-project
+#stack_name: one-node-swarm
 
 version: '3.8'
 
 services:
   api:
-    container_name: docker-webapi-container
     build:
       context: .
       dockerfile: SakilaWebApi/Dockerfile.webapi
-    image: docker-webapi-image
+    image: webapi-image
     restart: unless-stopped
     networks:
       - db-net
@@ -20,15 +19,17 @@ services:
       - "seq"
     deploy:
       mode: replicated
+      replicas: 1
+      labels:
+        - name=API
       placement:
         constraints: 
           - node.role == manager
   db:
-    container_name: docker-mssql-container
     build:
       context: ./DatabaseLibrary
       dockerfile: Dockerfile.mssql
-    image: docker-mssql-image
+    image: mssql-image
     volumes:
       - dbdata:/var/opt/mssql
     env_file:
@@ -40,6 +41,13 @@ services:
       - db-net
     deploy:
       mode: replicated
+      replicas: 1
+      labels:
+        - name=DB
+      resources:
+        # Hard limit - Docker does not allow to allocate more
+        limits:
+          memory: 4G
       placement:
         constraints: 
           - node.role == manager
@@ -55,11 +63,10 @@ services:
         monitor: 60s
         max_failure_ratio: 0.3
   seq:
-    container_name: docker-seq-container
     build:
       context: .
       dockerfile: Dockerfile.seq
-    image: docker-seq-image
+    image: seq-image
     ports:
       - 5341:80
     env_file:
@@ -71,6 +78,7 @@ services:
       - log-net
     deploy:
       mode: replicated
+      replicas: 1
       labels: 
         - name=SEQ
       resources:
@@ -99,12 +107,12 @@ services:
 
 networks:
   db-net:
-    name: docker-db-network
+    name: db-network
   log-net:
-    name: docker-log-network
+    name: log-network
 
 volumes:
   dbdata:
-    name: docker-mssql-volume
+    name: mssql-volume
   seqdata:
-    name: docker-seq-volume
+    name: seq-volume

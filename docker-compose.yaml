@@ -1,14 +1,13 @@
-#project_name: docker-swarm-project
+#stack_name: one-node-swarm
 
 version: '3.8'
 
 services:
   api:
-    container_name: docker-webapi-container
     build:
       context: .
       dockerfile: SakilaWebApi/Dockerfile.webapi
-    image: docker-webapi-image
+    image: webapi-image
     restart: unless-stopped
     networks:
       - db-net
@@ -19,45 +18,67 @@ services:
       - "db"
       - "seq"
     deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - name=API
       placement:
         constraints: 
           - node.role == manager
   db:
-    container_name: docker-mssql-container
     build:
       context: ./DatabaseLibrary
       dockerfile: Dockerfile.mssql
-    image: docker-mssql-image
+    image: mssql-image
     volumes:
       - dbdata:/var/opt/mssql
     env_file:
       - docker-mssql.env
-    restart: always
+    restart: unless-stopped
     ports:
       - 1433:1433
     networks:
       - db-net
     deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - name=DB
+      resources:
+        # Hard limit - Docker does not allow to allocate more
+        limits:
+          memory: 4G
       placement:
         constraints: 
           - node.role == manager
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 60s
+        max_failure_ratio: 0.3
   seq:
-    container_name: docker-seq-container
     build:
       context: .
       dockerfile: Dockerfile.seq
-    image: docker-seq-image
+    image: seq-image
     ports:
       - 5341:80
     env_file:
       - docker-seq.env
     restart: unless-stopped
     volumes:
-      - ./seqdata:/data
+      - seqdata:/data
     networks:
       - log-net
     deploy:
       mode: replicated
+      replicas: 1
       labels: 
         - name=SEQ
       resources:
@@ -85,6 +106,8 @@ services:
           - node.role == manager
   agent:
     image: portainer/agent:latest
+    environment:
+      AGENT_CLUSTER_ADDR: tasks.agent
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/volumes:/var/lib/docker/volumes
@@ -103,7 +126,6 @@ services:
   portainer:
     image: portainer/portainer-ce:latest
     command: -H tcp://tasks.agent:9001 --tlsskipverify
-    container_name: docker-portainer-container
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -111,8 +133,10 @@ services:
       - portainer-net
     ports:
       - 9000:9000
+    depends_on:
+      - "agent"
     volumes:
-      - ./portainerdata:/data
+      - portainerdata:/data
     deploy:
       placement:
         constraints:
@@ -120,18 +144,18 @@ services:
 
 networks:
   db-net:
-    name: docker-db-network
+    name: db-network
   log-net:
-    name: docker-log-network
+    name: log-network
   portainer-net:
-    name: docker-portainer-network
+    name: portainer-network
     driver: overlay
     attachable: true
 
 volumes:
   dbdata:
-    name: docker-mssql-volume
+    name: mssql-volume
   seqdata:
-    name: docker-seq-volume
+    name: seq-volume
   portainerdata:
-    name: docker-portainer-volume
+    name: portainer-volume

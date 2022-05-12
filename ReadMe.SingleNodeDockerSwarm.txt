@@ -26,6 +26,12 @@ Now the host is the leader of a single node swarm.
   (the force argument is used because leaving the swarm in the single node swarm will result in dropping the whole swarm. 
   Therefore, the additonal serurity leayer is present)
 ================================================
+By default the volume folder are stored in:
+\\wsl$\docker-desktop-data\version-pack-data\community\docker\volumes\
+
+We can easly change the location of the data volumes and store data in the folder related to the given context (example for seq):
+replace "seqdata:/data" into "./seqdata:/data"
+================================================
 VI. Single node docker swarm with services: api, db, seq, agent, portainer:
     a) Three Dockerfiles: Dockerfile.webapi (in SakilaWebApi), Dockerfile.mssql (in DatabaseLibrary), Dockerfile.seq (in solution folder)
     b) One docker-compose.yaml in the solution folder
@@ -33,9 +39,8 @@ VI. Single node docker swarm with services: api, db, seq, agent, portainer:
     d) External volumes: docker-mssql-volume, docker-seq-volume, docker-portainer-volume
     e) compose.cmd && compose.ps1 files to compose the solution (up or down) - project_name is specified in the docker-compose.yaml as comment. 
         Add to docker ignore: "**/compose*"
-        
     f) Seq is included in the separete container, connected with webapi by the new network
-    g) portainer agent and portiner to vizualize the swarm
+    g) Portainer agent and Portiner to vizualize the swarm
 ================================================
 
     Dockerfile.webapi:
@@ -95,23 +100,205 @@ ACCEPT_EULA=Y
 
     docker-compose.yaml:
 ======================
+#stack_name: one-node-swarm
 
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: SakilaWebApi/Dockerfile.webapi
+    image: webapi-image
+    restart: unless-stopped
+    networks:
+      - db-net
+      - log-net
+    ports:
+      - 8080:80
+    depends_on:
+      - "db"
+      - "seq"
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - name=API
+      placement:
+        constraints: 
+          - node.role == manager
+  db:
+    build:
+      context: ./DatabaseLibrary
+      dockerfile: Dockerfile.mssql
+    image: mssql-image
+    volumes:
+      - dbdata:/var/opt/mssql
+    env_file:
+      - docker-mssql.env
+    restart: unless-stopped
+    ports:
+      - 1433:1433
+    networks:
+      - db-net
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - name=DB
+      resources:
+        # Hard limit - Docker does not allow to allocate more
+        limits:
+          memory: 4G
+      placement:
+        constraints: 
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 60s
+        max_failure_ratio: 0.3
+  seq:
+    build:
+      context: .
+      dockerfile: Dockerfile.seq
+    image: seq-image
+    ports:
+      - 5341:80
+    env_file:
+      - docker-seq.env
+    restart: unless-stopped
+    volumes:
+      - seqdata:/data
+    networks:
+      - log-net
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels: 
+        - name=SEQ
+      resources:
+        # Hard limit - Docker does not allow to allocate more
+        limits:
+          cpus: '0.25'
+          memory: 512M
+        # Soft limit - Docker makes best effort to return to it
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 60s
+        max_failure_ratio: 0.3
+      placement:
+        constraints: 
+          - node.role == manager
+  agent:
+    image: portainer/agent:latest
+    environment:
+      AGENT_CLUSTER_ADDR: tasks.agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    ports:
+      - target: 9001
+        published: 9001
+        protocol: tcp
+        mode: host
+    networks:
+      - portainer-net
+    deploy:
+      mode: global
+      placement:
+        constraints: 
+          - node.platform.os == linux
+  portainer:
+    image: portainer/portainer-ce:latest
+    command: -H tcp://tasks.agent:9001 --tlsskipverify
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - portainer-net
+    ports:
+      - 9000:9000
+    depends_on:
+      - "agent"
+    volumes:
+      - portainerdata:/data
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  db-net:
+    name: db-network
+  log-net:
+    name: log-network
+  portainer-net:
+    name: portainer-network
+    driver: overlay
+    attachable: true
+
+volumes:
+  dbdata:
+    name: mssql-volume
+  seqdata:
+    name: seq-volume
+  portainerdata:
+    name: portainer-volume
 ======================
 
     compose.cmd:
 ======================
-
+set result=
+for /f "tokens=*" %%i in ('findstr "stack_name" docker-compose.yaml') do (
+  set result=%%i
+)
+set str=%result:~13,30%
+if %1 == up (
+  docker swarm init
+  docker stack deploy -c docker-compose.yaml %str%
+)
+if %1 == down (
+  docker swarm leave --force
+)
 ======================
 
     compose.ps1:
 ======================
-
+set result=
+for /f "tokens=*" %%i in ('findstr "stack_name" docker-compose.yaml') do (
+  set result=%%i
+)
+set str=%result:~13,30%
+if %1 == up (
+  docker swarm init
+  docker stack deploy -c docker-compose.yaml %str%
+)
+if %1 == down (
+  docker swarm leave --force
+)
 ======================
 
 To create a named project (a group of container) we navigate to the file where the "compose.cmd" file is (where solution is) and write:
     Preferred way:
 a) In the cmd, Make/Launch, vs terminal or similar:
-    1) compose <up/down>             
+    1) swarm <up/down>             
 b) In PowerShell and similar
-    1) .\compose.ps1 <up/down>       
-    2) "compose <up/down>" | cmd
+    1) .\swarm.ps1 <up/down>       
+    2) "swarm <up/down>" | cmd

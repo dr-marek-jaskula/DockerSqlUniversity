@@ -17,6 +17,8 @@ services:
     depends_on:
       - "db"
       - "seq"
+    secrets:
+      - db_ConnectionString
     deploy:
       mode: replicated
       replicas: 1
@@ -159,3 +161,7 @@ volumes:
     name: seq-volume
   portainerdata:
     name: portainer-volume
+
+secrets:
+  db_ConnectionString:
+    file: ConnectionStrings.json

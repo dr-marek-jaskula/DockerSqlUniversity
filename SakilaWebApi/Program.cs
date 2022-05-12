@@ -25,6 +25,11 @@ try
         .ReadFrom.Services(services)
         .Enrich.FromLogContext());
 
+    //Add connection string file for locally used application
+    //builder.Configuration.AddJsonFile(@"C:\Users\Marek\source\repos\DockerSqlUniversity\ConnectionStrings.json");
+    //Add docker secrets that are placed in the "/run/secrets" folder (remember to add ConnectionStrings.json to docker ignore)
+    builder.Configuration.AddJsonFile("/run/secrets/db_ConnectionString");
+
     builder.Services.AddControllers();
     builder.Services.AddDbContext<SakilaDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("FromContainerToContainer")));
 

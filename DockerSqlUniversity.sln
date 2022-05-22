@@ -5,9 +5,14 @@ VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SakilaWebApi", "SakilaWebApi\SakilaWebApi.csproj", "{57FBCB1B-67E8-4639-826B-B00EA34CA52B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SakilaWebApi.Tests", "TestWebApi\SakilaWebApi.Tests.csproj", "{43056B89-BB80-41F2-B8E4-2C8A662C5C0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SakilaWebApi.Tests", "TestWebApi\SakilaWebApi.Tests.csproj", "{43056B89-BB80-41F2-B8E4-2C8A662C5C0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseLibrary", "DatabaseLibrary\DatabaseLibrary.csproj", "{EB4EBB32-4417-4D8C-A365-75EB0F1A2A3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseLibrary", "DatabaseLibrary\DatabaseLibrary.csproj", "{EB4EBB32-4417-4D8C-A365-75EB0F1A2A3E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7F2BBF9A-F592-455E-B85F-33C7F3E64928}"
+	ProjectSection(SolutionItems) = preProject
+		ReadMe.md = ReadMe.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

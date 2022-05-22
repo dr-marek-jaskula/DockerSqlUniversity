@@ -12,7 +12,7 @@ The Portainer is included to govern the swarm. Moreover, the Seq is used as a lo
 * ASP.NET Core 
 * Entity Framework Core
 
-#### Containers
+## Containers
 
 * Webapi
 * SQL Server
@@ -21,7 +21,7 @@ The Portainer is included to govern the swarm. Moreover, the Seq is used as a lo
 * Portainer agent
 
 
-#### Main features
+## Main features
 * Dockerfiles
 * Composing services
 * Docker networking 

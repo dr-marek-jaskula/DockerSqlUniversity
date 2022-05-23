@@ -1,0 +1,2 @@
+﻿4) When the stack is no longer needed:
+  docker stack rm single-node-swarm

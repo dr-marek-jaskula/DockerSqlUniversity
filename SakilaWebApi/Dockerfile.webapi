@@ -37,6 +37,10 @@ FROM build AS publish
 
 #2. Publish the application (with no restore, becasue restore was done previously) and set the output directory to /app/publish
 RUN dotnet publish "SakilaWebApi.csproj" -c Release -o /app/publish --no-restore
+#We could use the other flags:
+#dotnet publish "SakilaWebApi.csproj" -c Release -o /app/publish --no-restore -p:PublishTrimmed=true
+#dotnet publish "SakilaWebApi.csproj" -c Release -o /app/publish --no-restore -p:PublishReadyToRun=true
+#PublishReadyToRun is for big application, PublishTrimmed what we what to make app as fit as possible (but can cause run time issues)
 
 	#Final stage
 

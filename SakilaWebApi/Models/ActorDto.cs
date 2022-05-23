@@ -1,4 +1,4 @@
-﻿namespace SakilaWebApi;
+﻿namespace SakilaWebApi.Models;
 
 public record ActorDto
 (

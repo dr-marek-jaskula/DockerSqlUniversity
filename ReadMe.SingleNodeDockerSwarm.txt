@@ -41,6 +41,7 @@ VI. Single node docker swarm with services: api, db, seq, agent, portainer:
         Add to docker ignore: "**/compose*"
     f) Seq is included in the separete container, connected with webapi by the new network
     g) Portainer agent and Portiner to vizualize the swarm
+    h) ConnectionString.json file in which we can safetly store sensitive data
 ================================================
 
     Dockerfile.webapi:
